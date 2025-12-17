@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Parent Meeting – Live Teacher Locations</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Montserrat;background:#0e1a2b;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh}
+#card{width:70%;padding:50px;border-radius:24px;background:linear-gradient(135deg,#1e3c72,#2a5298);box-shadow:0 40px 80px rgba(0,0,0,.4);text-align:center}
+#title{font-size:42px;font-weight:800;margin-bottom:30px}
+.line{font-size:28px;margin:14px 0}
+.label{opacity:.7}
+.value{font-weight:600}
+#clock{position:absolute;top:30px;right:40px;font-size:26px}
+#logo{position:absolute;top:25px;left:40px;font-size:26px;font-weight:800}
+</style>
+</head>
+<body>
+<div id="logo">SCHOOL LOGO</div>
+<div id="clock"></div>
+<div id="card">
+  <div id="title">NOW ACCEPTING PARENTS</div>
+  <div class="line"><span class="label">Teacher:</span> <span id="teacher" class="value"></span></div>
+  <div class="line"><span class="label">Room:</span> <span id="room" class="value"></span></div>
+  <div class="line"><span class="label">Floor:</span> <span id="floor" class="value"></span></div>
+  <div class="line"><span class="label">Assistant:</span> <span id="assistant" class="value"></span></div>
+</div>
+
+<script>
+let data=[],index=0;
+fetch('teachers.json').then(r=>r.json()).then(j=>data=j);
+
+function now(){const d=new Date();return d.getHours()*60+d.getMinutes();}
+function toMin(t){const[a,b]=t.split(':');return +a*60+ +b;}
+
+function update(){
+  const active=data.filter(t=>now()>=toMin(t.from)&&now()<=toMin(t.to));
+  if(active.length===0) return;
+  const t=active[index%active.length];
+  teacher.textContent=t.teacher;
+  room.textContent=t.room;
+  floor.textContent='Floor '+t.floor;
+  assistant.textContent=t.assistant||'—';
+  index++;
+}
+setInterval(update,7000);
+update();
+
+setInterval(()=>{
+  const d=new Date();
+  clock.textContent=d.toLocaleTimeString();
+},1000);
+</script>
+</body>
+</html>
+
